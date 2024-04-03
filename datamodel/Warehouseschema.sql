@@ -1,5 +1,5 @@
 CREATE TABLE contributions (
-  contribution_id INT PRIMARY KEY AUTO_INCREMENT,
+  contribution_id INTEGER PRIMARY KEY AUTOINCREMENT,
   donor_id INT NOT NULL,
   recipient_id INT NOT NULL,
   date_id INT NOT NULL,
@@ -11,21 +11,23 @@ CREATE TABLE contributions (
 );
 
 CREATE TABLE donors (
-  donor_id INT PRIMARY KEY AUTO_INCREMENT,
+  donor_id INTEGER PRIMARY KEY AUTOINCREMENT,
   name VARCHAR(255) NOT NULL,
-  donor_type ENUM('individual', 'entity'),
+  donor_type VARCHAR(50), -- Using VARCHAR instead of ENUM
   address VARCHAR(255),
   city VARCHAR(100),
-  state VARCHAR(
-
-CREATE TABLE recipients (
-  recipient_id INT PRIMARY KEY AUTO_INCREMENT,
-  name VARCHAR(255) NOT NULL,
-  type ENUM('candidate', 'officeholder', 'committee')
+  state VARCHAR(100)
 );
 
+CREATE TABLE recipients (
+  recipient_id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name VARCHAR(255) NOT NULL,
+  type VARCHAR(50) -- Using VARCHAR instead of ENUM
+);
+
+
 CREATE TABLE dates (
-  date_id INT PRIMARY KEY AUTO_INCREMENT,
+  date_id INTEGER PRIMARY KEY AUTOINCREMENT,
   date DATE NOT NULL,
   year INT NOT NULL
 );
