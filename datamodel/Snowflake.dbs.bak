@@ -70,11 +70,15 @@
 		</table>
 	</schema>
 	<layout name="Layout" id="Layout-329" show_relation="name" >
-		<entity schema="public" name="Contribution_Types" color="BED3F4" x="736" y="48" />
-		<entity schema="public" name="Contributions" color="BED3F4" x="448" y="128" />
-		<entity schema="public" name="Dates" color="BED3F4" x="448" y="480" />
-		<entity schema="public" name="Donors" color="BED3F4" x="64" y="336" />
-		<entity schema="public" name="Recipients" color="BED3F4" x="864" y="320" />
-		<entity schema="public" name="Report_Types" color="BED3F4" x="48" y="48" />
+		<entity schema="public" name="Contribution_Types" color="BED3F4" x="784" y="48" />
+		<entity schema="public" name="Contributions" color="BED3F4" x="496" y="128" />
+		<entity schema="public" name="Dates" color="BED3F4" x="496" y="480" />
+		<entity schema="public" name="Donors" color="BED3F4" x="112" y="336" />
+		<entity schema="public" name="Recipients" color="BED3F4" x="912" y="320" />
+		<entity schema="public" name="Report_Types" color="BED3F4" x="96" y="48" />
+		<callout x="48" y="176" pointer="Round" >
+			<comment><![CDATA[Add tables to the layout diagram (here) by drag & drop from the Project Tree.
+Drop this callout from its right-click pop-up.]]></comment>
+		</callout>
 	</layout>
 </project>
