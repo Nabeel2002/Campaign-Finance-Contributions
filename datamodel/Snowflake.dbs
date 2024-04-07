@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="snowflake.sql" id="MySql-2356" database="MySql" >
+	<schema name="public" >
+		<table name="Contribution_Types" spec="" >
+			<column name="Contribution_Type" type="VARCHAR" length="255" jt="12" mandatory="y" />
+			<index name="pk_contribution_types" unique="PRIMARY_KEY" >
+				<column name="Contribution_Type" />
+			</index>
+		</table>
+		<table name="Contributions" spec="" >
+			<column name="Transaction" type="INT" jt="4" mandatory="y" />
+			<column name="Recipient" type="VARCHAR" length="255" jt="12" />
+			<column name="Contribution_Date" type="DATE" jt="91" />
+			<column name="Contribution_Amount" type="DECIMAL" length="10" decimal="2" jt="3" />
+			<column name="Donor" type="VARCHAR" length="255" jt="12" />
+			<column name="In_Kind_Description" type="VARCHAR" length="255" jt="12" />
+			<column name="Out_of_State_PAC_ID" type="VARCHAR" length="20" jt="12" />
+			<column name="Correction" type="VARCHAR" length="10" jt="12" />
+			<column name="View_Report" type="VARCHAR" length="255" jt="12" />
+			<column name="Contribution_Type" type="VARCHAR" length="255" jt="12" />
+			<column name="Report_Filed" type="VARCHAR" length="255" jt="12" />
+			<index name="pk_contributions" unique="PRIMARY_KEY" >
+				<column name="Transaction" />
+			</index>
+			<fk name="fk" to_schema="public" to_table="Recipients" options="" >
+				<fk_column name="Recipient" pk="Recipient" />
+			</fk>
+			<fk name="fk" to_schema="public" to_table="Dates" options="" >
+				<fk_column name="Contribution_Date" pk="Contribution_Date" />
+			</fk>
+			<fk name="fk" to_schema="public" to_table="Donors" options="" >
+				<fk_column name="Donor" pk="Donor" />
+			</fk>
+			<fk name="fk" to_schema="public" to_table="Contribution_Types" options="" >
+				<fk_column name="Contribution_Type" pk="Contribution_Type" />
+			</fk>
+			<fk name="fk" to_schema="public" to_table="Report_Types" options="" >
+				<fk_column name="Report_Filed" pk="Report_Filed" />
+			</fk>
+		</table>
+		<table name="Dates" spec="" >
+			<column name="Contribution_Date" type="DATE" jt="91" mandatory="y" />
+			<column name="Contribution_Year" type="INT" jt="4" />
+			<index name="pk_dates" unique="PRIMARY_KEY" >
+				<column name="Contribution_Date" />
+			</index>
+		</table>
+		<table name="Donors" spec="" >
+			<column name="Donor" type="VARCHAR" length="255" jt="12" mandatory="y" />
+			<column name="Donor_Type" type="VARCHAR" length="20" jt="12" />
+			<column name="Donor_Address" type="VARCHAR" length="255" jt="12" />
+			<column name="City_State_Zip" type="VARCHAR" length="100" jt="12" />
+			<column name="Donor_Reported_Occupation" type="VARCHAR" length="255" jt="12" />
+			<column name="Donor_Reported_Employer" type="VARCHAR" length="255" jt="12" />
+			<index name="pk_donors" unique="PRIMARY_KEY" >
+				<column name="Donor" />
+			</index>
+		</table>
+		<table name="Recipients" spec="" >
+			<column name="Recipient" type="VARCHAR" length="255" jt="12" mandatory="y" />
+			<index name="pk_recipients" unique="PRIMARY_KEY" >
+				<column name="Recipient" />
+			</index>
+		</table>
+		<table name="Report_Types" spec="" >
+			<column name="Report_Filed" type="VARCHAR" length="255" jt="12" mandatory="y" />
+			<index name="pk_report_types" unique="PRIMARY_KEY" >
+				<column name="Report_Filed" />
+			</index>
+		</table>
+	</schema>
+	<layout name="Layout" id="Layout-329" show_relation="name" >
+		<entity schema="public" name="Contribution_Types" color="BED3F4" x="784" y="48" />
+		<entity schema="public" name="Contributions" color="BED3F4" x="496" y="128" />
+		<entity schema="public" name="Dates" color="BED3F4" x="496" y="480" />
+		<entity schema="public" name="Donors" color="BED3F4" x="112" y="336" />
+		<entity schema="public" name="Recipients" color="BED3F4" x="912" y="320" />
+		<entity schema="public" name="Report_Types" color="BED3F4" x="96" y="48" />
+		<callout x="48" y="176" pointer="Round" >
+			<comment><![CDATA[Add tables to the layout diagram (here) by drag & drop from the Project Tree.
+Drop this callout from its right-click pop-up.]]></comment>
+		</callout>
+	</layout>
+</project>

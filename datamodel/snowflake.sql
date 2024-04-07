@@ -16,7 +16,6 @@ CREATE TABLE Dates (
   Contribution_Year INT
 );
 
--- Optional Dimension Tables
 CREATE TABLE Report_Types (
   Report_Filed VARCHAR(255) PRIMARY KEY
 );
@@ -35,6 +34,7 @@ CREATE TABLE Contributions (
   Out_of_State_PAC_ID VARCHAR(20),
   Correction VARCHAR(10),
   View_Report VARCHAR(255),
-  FOREIGN KEY (Contribution_Type) REFERENCES Contribution_Types(Contribution_Type),  -- Add if using optional table
-  FOREIGN KEY (Report_Filed) REFERENCES Report_Types(Report_Filed)  -- Add if using optional table
+  Contribution_Type VARCHAR(255) REFERENCES Contribution_Types(Contribution_Type),
+  Report_Filed VARCHAR(255) REFERENCES Report_Types(Report_Filed)
 );
+
