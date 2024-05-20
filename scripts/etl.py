@@ -28,11 +28,29 @@ df['contribution_date'] = pd.to_datetime(df['contribution_date'], errors='coerce
 df['date_reported'] = pd.to_datetime(df['date_reported'], errors='coerce')
 
 # Add any additional transformations needed for visualizations
-# For example, we can split 'city_state_zip' into separate columns
-df[['city', 'state', 'zip']] = df['city_state_zip'].str.split(', ', expand=True)
-df['zip'] = df['zip'].str.split(',').str[1]  # To handle cases like "Austin, TX, 78746"
+# Split 'city_state_zip' into separate columns with more robust handling
+city_state_zip_split = df['city_state_zip'].str.rsplit(', ', n=2, expand=True)
 
-# Drop the original 'city_state_zip' column as we have split it into separate columns
+# If the split results in three parts, we have city, state, and zip
+if city_state_zip_split.shape[1] == 3:
+    df['city'] = city_state_zip_split[0]
+    df['state'] = city_state_zip_split[1]
+    df['zip'] = city_state_zip_split[2]
+# If the split results in two parts, we may only have city and state/zip
+elif city_state_zip_split.shape[1] == 2:
+    df['city'] = city_state_zip_split[0]
+    state_zip_split = city_state_zip_split[1].str.split(' ', n=1, expand=True)
+    df['state'] = state_zip_split[0]
+    df['zip'] = state_zip_split[1]
+else:
+    df['city'] = city_state_zip_split[0]
+    df['state'] = ''
+    df['zip'] = ''
+
+# Clean up whitespace in 'zip'
+df['zip'] = df['zip'].str.strip()
+
+# Drop the original 'city_state_zip' column
 df.drop(columns=['city_state_zip'], inplace=True)
 
 # Load: Save the transformed data into a CSV file
