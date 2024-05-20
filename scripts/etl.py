@@ -1,85 +1,41 @@
-from pymongo import MongoClient
-import psycopg2
-from datetime import datetime
+import pymongo
+import pandas as pd
 
-# Connect to MongoDB
-mongo_client = MongoClient('mongodb://localhost:27017')
-mongo_db = mongo_client['your_mongodb_database']
-mongo_collection = mongo_db['your_mongodb_collection']
+# MongoDB connection URI
+uri = "mongodb+srv://xzy1551:Nabeel2002@austincontributions.3qvgojq.mongodb.net/?retryWrites=true&w=majority&appName=AustinContributions"
 
-# Connect to PostgreSQL Data Warehouse
-postgres_conn = psycopg2.connect(
-    host="your_host",
-    database="your_database",
-    user="your_user",
-    password="your_password"
-)
-postgres_cursor = postgres_conn.cursor()
+# Connect to the MongoDB cluster
+client = pymongo.MongoClient(uri)
 
-# Function to transform and load data
-def etl():
-    for document in mongo_collection.find():
-        donor = document.get('donor')
-        recipient = document.get('recipient')
-        contribution_amount = float(document.get('contribution_amount'))
-        contribution_date = datetime.strptime(document.get('contribution_date'), "%Y-%m-%dT%H:%M:%S.%f").date()
-        donor_type = document.get('donor_type')
-        donor_address = document.get('donor_address')
-        city_state_zip = document.get('city_state_zip')
-        donor_reported_occupation = document.get('donor_reported_occupation')
-        donor_reported_employer = document.get('donor_reported_employer')
-        contribution_type = document.get('contribution_type')
-        date_reported = datetime.strptime(document.get('date_reported'), "%Y-%m-%dT%H:%M:%S.%f").date()
-        report_filed = document.get('report_filed')
-        view_report_url = document.get('view_report', {}).get('url', '')
-        transaction_id = document.get('transaction_id')
-        retrieved_date = document.get('retrieved_date', {}).get('$date', '')
+# Access the specific database and collection
+db = client['AustinContributions']
+collection = db['Contributions']
 
-        # Load into PostgreSQL
-        postgres_cursor.execute("""
-            INSERT INTO Donors (Donor, Donor_Type, Donor_Address, City_State_Zip, Donor_Reported_Occupation, Donor_Reported_Employer)
-            VALUES (%s, %s, %s, %s, %s, %s)
-            ON CONFLICT (Donor) DO NOTHING;
-        """, (donor, donor_type, donor_address, city_state_zip, donor_reported_occupation, donor_reported_employer))
+# Extract: Read data from MongoDB collection
+data = list(collection.find())
 
-        postgres_cursor.execute("""
-            INSERT INTO Recipients (Recipient)
-            VALUES (%s)
-            ON CONFLICT (Recipient) DO NOTHING;
-        """, (recipient,))
+# Transform: Convert the data into a pandas DataFrame
+df = pd.DataFrame(data)
 
-        postgres_cursor.execute("""
-            INSERT INTO Dates (Contribution_Date, Contribution_Year)
-            VALUES (%s, %s)
-            ON CONFLICT (Contribution_Date) DO NOTHING;
-        """, (contribution_date, contribution_date.year))
+# Drop MongoDB's default _id field as it's not needed for visualization
+df.drop(columns=['_id'], inplace=True)
 
-        postgres_cursor.execute("""
-            INSERT INTO Contribution_Types (Contribution_Type)
-            VALUES (%s)
-            ON CONFLICT (Contribution_Type) DO NOTHING;
-        """, (contribution_type,))
+# Ensure 'contribution_amount' is numeric
+df['contribution_amount'] = pd.to_numeric(df['contribution_amount'], errors='coerce')
 
-        postgres_cursor.execute("""
-            INSERT INTO Report_Types (Report_Filed)
-            VALUES (%s)
-            ON CONFLICT (Report_Filed) DO NOTHING;
-        """, (report_filed,))
+# Transform dates to datetime format
+df['contribution_date'] = pd.to_datetime(df['contribution_date'], errors='coerce')
+df['date_reported'] = pd.to_datetime(df['date_reported'], errors='coerce')
 
-        postgres_cursor.execute("""
-            INSERT INTO Contributions (Transaction, Recipient, Contribution_Date, Contribution_Amount, Donor,
-                                       Contribution_Type, Report_Filed, View_Report)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-            ON CONFLICT (Transaction) DO NOTHING;
-        """, (transaction_id, recipient, contribution_date, contribution_amount, donor, contribution_type,
-              report_filed, view_report_url))
+# Add any additional transformations needed for visualizations
+# For example, we can split 'city_state_zip' into separate columns
+df[['city', 'state', 'zip']] = df['city_state_zip'].str.split(', ', expand=True)
+df['zip'] = df['zip'].str.split(',').str[1]  # To handle cases like "Austin, TX, 78746"
 
-    postgres_conn.commit()
+# Drop the original 'city_state_zip' column as we have split it into separate columns
+df.drop(columns=['city_state_zip'], inplace=True)
 
-# Run ETL
-etl()
+# Load: Save the transformed data into a CSV file
+df.to_csv('Austin_ready_data.csv', index=False)
 
-# Close connections
-mongo_client.close()
-postgres_cursor.close()
-postgres_conn.close()
+print("ETL process completed successfully. Data saved to Austin_ready_data.csv")
